@@ -6,3 +6,39 @@ DerivedData/
 .swiftpm/configuration/registries.json
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .netrc
+
+# Xcode
+*.xcuserstate
+*.xcworkspace
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/xcshareddata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Swift Package Manager
+/.build
+/.swiftpm
+
+# CocoaPods
+Pods/
+
+# Derived files
+*.hmap
+*.ipa
+*.dSYM
+
+# App store and provisioning
+*.mobileprovision
+*.p12
+
+# macOS
+.DS_Store
+
+# JetBrains
+.idea/
+
+# Logs
+*.log
+
+# Explicit SPM index build data (from user request)
+/Prism/.build/*
