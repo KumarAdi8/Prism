@@ -5,6 +5,7 @@
 //  Created by Adi on 03/04/26.
 //
 
+import Prism
 import SwiftUI
 
 @main
