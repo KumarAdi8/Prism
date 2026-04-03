@@ -17,7 +17,10 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "Prism"
+            name: "Prism",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .testTarget(
             name: "PrismTests",
