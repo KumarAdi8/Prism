@@ -7,7 +7,8 @@ Shared handoff memory for all agents working on this repository.
 ## Project
 
 **Name:** Prism — Swift design theme system library  
-**Swift Tools:** 6.2 | **Platforms:** iOS 17+, macOS 14+ | **Distribution:** SPM only
+**Swift Tools:** 6.2 | **Platforms:** iOS 17+, macOS 14+ | **Distribution:** SPM only  
+**Dependencies:** [Pow](https://github.com/EmergeTools/Pow) `from: "1.0.0"` (internal only — not re-exported)
 
 ---
 
@@ -52,6 +53,11 @@ Sources/Prism/
     PrismEnvironmentKey.swift    — EnvironmentValues.prismTheme
     PrismThemeModifier.swift     — View.prismTheme(_:) / View.prismTheme(_:liquidGlass:)
                                    LiquidGlassWrapper (internal struct)
+  Effects/
+    PrismEffectTypes.swift       — PrismParticleLayer, PrismShakeRate, PrismSpinRate,
+                                   PrismBlindsStyle, PrismSkidDirection, PrismSoundEffect(iOS)
+    PrismTransitions.swift       — AnyTransition.prism namespace (17 transitions)
+    PrismChangeEffect.swift      — PrismChangeEffect + View.prismEffect() + View.prismParticleLayer()
 Tests/PrismTests/
   PrismTests.swift               — smoke test (1 test)
   TokenCompletenessTests.swift   — 10 parameterized tests × 9 combos

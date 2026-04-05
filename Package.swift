@@ -13,9 +13,15 @@ let package = Package(
             targets: ["Prism"]
         ),
     ],
+    dependencies: [
+        .package(url: "https://github.com/EmergeTools/Pow", from: "1.0.0"),
+    ],
     targets: [
         .target(
             name: "Prism",
+            dependencies: [
+                .product(name: "Pow", package: "Pow"),
+            ],
             path: "Prism/Sources/Prism",
             resources: [
                 .process("Resources")

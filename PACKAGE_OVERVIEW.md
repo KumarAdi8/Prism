@@ -1,6 +1,6 @@
 # Prism — Package Overview
 
-A reusable, scalable Swift design-theme library for Apple platforms. Prism provides a complete design-token system, three opinionated built-in themes, a full suite of UI components, and a clean protocol-based API for creating custom themes — all with zero third-party dependencies.
+A reusable, scalable Swift design-theme library for Apple platforms. Prism provides a complete design-token system, three opinionated built-in themes, a full suite of UI components, and a clean protocol-based API for creating custom themes — all with zero third-party dependencies exposed to consumers. ([Pow](https://github.com/EmergeTools/Pow) is used internally to power animations and is not part of Prism's public API.)
 
 ---
 
@@ -34,9 +34,13 @@ A reusable, scalable Swift design-theme library for Apple platforms. Prism provi
    - [Popovers](#popovers)
    - [Sheets](#sheets)
    - [Text Styles](#text-styles)
-8. [Theme Provider](#theme-provider)
-9. [Shared Types](#shared-types)
-10. [Public API Reference](#public-api-reference)
+8. [Transitions & Change Effects](#transitions--change-effects)
+   - [Transitions](#transitions)
+   - [Change Effects](#change-effects)
+   - [Particle Layer](#particle-layer)
+9. [Theme Provider](#theme-provider)
+10. [Shared Types](#shared-types)
+11. [Public API Reference](#public-api-reference)
 
 ---
 
@@ -48,7 +52,7 @@ A reusable, scalable Swift design-theme library for Apple platforms. Prism provi
 | macOS    | 14.0+          |
 
 - **Swift** 5.9+ (Xcode 15+)
-- No third-party dependencies
+- [Pow](https://github.com/EmergeTools/Pow) is used internally — never exposed in Prism's public API.
 
 ---
 
@@ -898,6 +902,108 @@ Text("Last updated 3 min ago")
 
 ---
 
+## Transitions & Change Effects
+
+Prism wraps [Pow](https://github.com/EmergeTools/Pow) internally to deliver delightful SwiftUI transitions and change effects. Pow is a private implementation detail — its types are never exposed in Prism's public API and consumers only need `import Prism`.
+
+### Transitions
+
+All transitions are accessed via the `.prism` namespace on `AnyTransition`:
+
+```swift
+myView.transition(.prism.anvil)
+myView.transition(.prism.pop(.orange))
+myView.transition(.prism.vanish)
+```
+
+| Transition | Description |
+|---|---|
+| `.anvil` | Drops view from the top with haptic feedback (insertion only, 1.4 s) |
+| `.blinds` / `.blinds(slatWidth:style:isStaggered:)` | Window-blind reveal; `style` is `PrismBlindsStyle` |
+| `.blur` | Blurry → sharp on insert; sharp → blurry on remove |
+| `.boing` / `.boing(edge:)` | Elastic overshoot from edge |
+| `.clock` / `.clock(blurRadius:)` | Clockwise sweep |
+| `.filmExposure` | Dark → visible on insert; visible → dark on remove |
+| `.flicker` / `.flicker(count:)` | Visibility toggles before settling |
+| `.flip` | 3-D card-flip rotation |
+| `.glare` / `.glare(angle:color:)` | Diagonal wipe + colored streak |
+| `.iris(origin:blurRadius:)` | Expanding/shrinking circle mask |
+| `.move(edge:)` / `.move(angle:)` | Directional slide |
+| `.pop` / `.pop(_ style:)` | Ripple + tinted particles (insertion only, 1.2 s) |
+| `.poof` | Cartoon-cloud dissolve (removal only, 0.4 s) |
+| `.skid` / `.skid(direction:)` | Elastic skid; `direction` is `PrismSkidDirection` |
+| `.swoosh` | 3-D front-to-back / back-to-front |
+| `.vanish` / `.vanish(_ style:)` / `.vanish(_ style:mask:eoFill:)` | Particle dissolve (removal only) |
+| `.wipe(edge:blurRadius:)` / `.wipe(angle:blurRadius:)` | Sweep wipe |
+
+**Asymmetric example:**
+
+```swift
+infoBox
+    .transition(
+        .asymmetric(
+            insertion: .prism.glare(angle: .degrees(225)),
+            removal: .prism.glare(angle: .degrees(45))
+        )
+    )
+```
+
+---
+
+### Change Effects
+
+Change effects fire every time a bound value changes. Use `.prismEffect(_:value:isEnabled:)`:
+
+```swift
+likeButton
+    .prismEffect(.spray { Image(systemName: "heart.fill") }, value: likes)
+
+submitButton
+    .prismEffect(.shine.delay(1), value: name.isEmpty, isEnabled: !name.isEmpty)
+```
+
+| Effect | Description |
+|---|---|
+| `.spray(origin:layer:particles:)` | Burst of particles in varied sizes and shades; `layer` is `PrismParticleLayer` |
+| `.rise(origin:layer:particles:)` | Particles float upward side-to-side; `layer` is `PrismParticleLayer` |
+| `.pulse(shape:count:)` / `.pulse(shape:style:count:)` | Expanding, fading shape rings |
+| `.jump(height:)` | View jumps up then bounces |
+| `.shake` / `.shake(rate:)` | Lateral shake; `rate` is `PrismShakeRate` |
+| `.shine` / `.shine(duration:)` / `.shine(angle:duration:)` | Streak of light across the view |
+| `.spin` / `.spin(axis:anchor:anchorZ:perspective:rate:)` | 3-D spin; `rate` is `PrismSpinRate` |
+| `.feedback(hapticNotification:)` | Notification haptic on change (iOS) |
+| `.feedback(hapticImpact:)` | Impact haptic on change (iOS) |
+| `.feedbackHapticSelection` | Selection haptic on change (iOS) |
+| `.feedback(_ soundEffect:)` | `PrismSoundEffect` playback on change (iOS) |
+
+Every effect can be delayed:
+
+```swift
+.prismEffect(.shine.delay(0.5), value: someValue)
+```
+
+---
+
+### Particle Layer
+
+Particle effects render locally by default. Use `.prismParticleLayer(name:)` to lift particles above a clipping ancestor (e.g. a `List` row or `NavigationStack`):
+
+```swift
+List { /* rows */ }
+    .prismParticleLayer(name: "listLayer")
+```
+
+Reference the named layer in the effect:
+
+```swift
+row.prismEffect(
+    .spray(layer: .named("listLayer")) { star },
+    value: count
+)
+```
+
+---
+
 ## Theme Provider
 
 `PrismThemeProvider` is a `@MainActor @Observable` singleton for programmatic theme switching — use it when you need to change the theme from outside the SwiftUI view hierarchy (e.g. from a settings screen or on app launch based on a stored preference).
@@ -1058,3 +1164,10 @@ public enum PrismThemeFamily: Sendable {
 | `PrismBackdropStyle` | `.dim` / `.blur` / `.none` |
 | `ElevationLevel` | Shadow parameters struct |
 | `HapticFeedbackType` | `.selection` / `.impact` / `.notification` / `.none` |
+| `PrismChangeEffect` | Opaque change-effect type; access via static factories |
+| `PrismParticleLayer` | `.local` / `.named(_:)` — particle render target |
+| `PrismShakeRate` | `.default` / `.fast` / `.phaseLength(_:)` |
+| `PrismSpinRate` | `.default` / `.fast` / `.velocity(initial:maximum:additional:)` |
+| `PrismBlindsStyle` | `.venetian` / `.vertical` |
+| `PrismSkidDirection` | `.leading` / `.trailing` |
+| `PrismSoundEffect` | Audio feedback wrapper (iOS only) |
