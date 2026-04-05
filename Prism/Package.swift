@@ -25,7 +25,7 @@ let package = Package(
                 .product(name: "Pow", package: "Pow"),
             ],
             resources: [
-                .process("Resources")
+                .copy("Resources")
             ]
         ),
         .testTarget(

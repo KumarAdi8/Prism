@@ -23,8 +23,20 @@ enum KoreanAestheticFonts {
             "Delius-Regular",
         ]
         for name in fontNames {
+            // Try with preserved subdirectory (.copy resources) then fall back
+            // to bundle root (.process resources, which may flatten structure).
             guard
                 let url = Bundle.module.url(
+                    forResource: name,
+                    withExtension: "ttf",
+                    subdirectory: "Resources/Fonts/KoreanAesthetic"
+                )
+                ?? Bundle.module.url(
+                    forResource: name,
+                    withExtension: "ttf",
+                    subdirectory: "Fonts/KoreanAesthetic"
+                )
+                ?? Bundle.module.url(
                     forResource: name,
                     withExtension: "ttf"
                 )
