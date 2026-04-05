@@ -26,8 +26,7 @@ enum KoreanAestheticFonts {
             guard
                 let url = Bundle.module.url(
                     forResource: name,
-                    withExtension: "ttf",
-                    subdirectory: "Fonts/KoreanAesthetic"
+                    withExtension: "ttf"
                 )
             else {
                 assertionFailure("Prism: missing font resource \(name).ttf")
